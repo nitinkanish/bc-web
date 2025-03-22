@@ -1,0 +1,43 @@
+{
+  "name": "Himachal News",
+  "short_name": "HP News",
+  "description": "Latest news from Himachal Pradesh",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Latest News",
+      "short_name": "Latest",
+      "description": "View the latest news",
+      "url": "/",
+      "icons": [{ "src": "/icons/latest-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Saved Articles",
+      "short_name": "Saved",
+      "description": "View your saved articles",
+      "url": "/read-later",
+      "icons": [{ "src": "/icons/saved-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "categories": ["news", "magazines"]
+}
+
