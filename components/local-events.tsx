@@ -43,4 +43,3 @@ export default function LocalEvents({ districtName, events }: LocalEventsProps) 
     </Card>
   )
 }
-

@@ -64,4 +64,3 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
     </div>
   )
 }
-

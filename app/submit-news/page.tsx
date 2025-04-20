@@ -257,4 +257,3 @@ export default function SubmitNewsPage() {
     </div>
   )
 }
-

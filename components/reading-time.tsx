@@ -5,7 +5,6 @@ interface ReadingTimeProps {
 }
 
 export default function ReadingTime({ content }: ReadingTimeProps) {
-
   return (
     <div className="flex items-center text-sm text-muted-foreground">
       <Clock className="h-4 w-4 mr-1" />
@@ -13,4 +12,3 @@ export default function ReadingTime({ content }: ReadingTimeProps) {
     </div>
   )
 }
-

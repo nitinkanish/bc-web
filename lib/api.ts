@@ -8,6 +8,19 @@ const api = axios.create({
   timeout: 10000,
 })
 
+// Simple in-memory cache
+const cache: Record<string, { data: any; timestamp: number }> = {}
+const CACHE_DURATION = 60 * 60 * 1000 // 1 hour in milliseconds
+
+// Default categories fallback data
+const DEFAULT_CATEGORIES = [
+  { id: 1, name: "Politics", slug: "politics", count: 10 },
+  { id: 2, name: "Sports", slug: "sports", count: 15 },
+  { id: 3, name: "Tourism", slug: "tourism", count: 8 },
+  { id: 4, name: "Crime", slug: "crime", count: 12 },
+  { id: 5, name: "Weather", slug: "weather", count: 5 },
+]
+
 // Types
 export interface Post {
   id: number
@@ -65,17 +78,68 @@ export interface Media {
   alt_text: string
 }
 
+// Helper function to get or set cache
+async function cachedRequest(key: string, requestFn: () => Promise<any>) {
+  // Check if we have a valid cache entry
+  const cacheEntry = cache[key]
+  const now = Date.now()
+
+  if (cacheEntry && now - cacheEntry.timestamp < CACHE_DURATION) {
+    return cacheEntry.data
+  }
+
+  try {
+    // Make the actual request
+    const data = await requestFn()
+
+    // Cache the result
+    cache[key] = { data, timestamp: now }
+
+    return data
+  } catch (error) {
+    // If we have a stale cache entry, return it rather than failing
+    if (cacheEntry) {
+      console.warn(`Using stale cache for ${key} due to request error`)
+      return cacheEntry.data
+    }
+    throw error
+  }
+}
+
+// API functions with retry logic
+async function makeRequestWithRetry(requestFn: () => Promise<any>, retries = 3, delay = 1000) {
+  try {
+    return await requestFn()
+  } catch (error: any) {
+    if (retries <= 0) throw error
+
+    // If rate limited (429), wait longer
+    const waitTime = error.response?.status === 429 ? delay * 2 : delay
+
+    console.warn(`Request failed, retrying in ${waitTime}ms... (${retries} retries left)`)
+    await new Promise((resolve) => setTimeout(resolve, waitTime))
+
+    return makeRequestWithRetry(requestFn, retries - 1, waitTime * 2)
+  }
+}
+
 // API functions
 export async function getPosts(params = {}) {
+  const cacheKey = `posts-${JSON.stringify(params)}`
+
   try {
-    const response = await api.get("/posts", {
-      params: {
-        _embed: "wp:featuredmedia,author",
-        per_page: 10,
-        ...params,
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/posts", {
+          params: {
+            _embed: "wp:featuredmedia,author",
+            per_page: 10,
+            ...params,
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error("Error fetching posts:", error)
     return []
@@ -83,14 +147,20 @@ export async function getPosts(params = {}) {
 }
 
 export async function getPostBySlug(slug: string) {
+  const cacheKey = `post-${slug}`
+
   try {
-    const response = await api.get("/posts", {
-      params: {
-        slug,
-        _embed: "wp:featuredmedia,author",
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/posts", {
+          params: {
+            slug,
+            _embed: "wp:featuredmedia,author",
+          },
+        }),
+      )
+      return response.data[0] || null
     })
-    return response.data[0] || null
   } catch (error) {
     console.error(`Error fetching post with slug ${slug}:`, error)
     return null
@@ -98,30 +168,43 @@ export async function getPostBySlug(slug: string) {
 }
 
 export async function getCategories() {
+  const cacheKey = "categories"
+
   try {
-    const response = await api.get("/categories", {
-      params: {
-        per_page: 100,
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/categories", {
+          params: {
+            per_page: 100,
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error("Error fetching categories:", error)
-    return []
+    // Return default categories as fallback
+    return DEFAULT_CATEGORIES
   }
 }
 
 export async function getPostsByCategory(categoryId: number, params = {}) {
+  const cacheKey = `posts-category-${categoryId}-${JSON.stringify(params)}`
+
   try {
-    const response = await api.get("/posts", {
-      params: {
-        categories: categoryId,
-        _embed: "wp:featuredmedia,author",
-        per_page: 10,
-        ...params,
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/posts", {
+          params: {
+            categories: categoryId,
+            _embed: "wp:featuredmedia,author",
+            per_page: 10,
+            ...params,
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error(`Error fetching posts for category ${categoryId}:`, error)
     return []
@@ -129,14 +212,20 @@ export async function getPostsByCategory(categoryId: number, params = {}) {
 }
 
 export async function getCommentsByPostId(postId: number) {
+  const cacheKey = `comments-${postId}`
+
   try {
-    const response = await api.get("/comments", {
-      params: {
-        post: postId,
-        per_page: 100,
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/comments", {
+          params: {
+            post: postId,
+            per_page: 100,
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error(`Error fetching comments for post ${postId}:`, error)
     return []
@@ -145,13 +234,15 @@ export async function getCommentsByPostId(postId: number) {
 
 export async function submitComment(postId: number, name: string, email: string, content: string, parent = 0) {
   try {
-    const response = await api.post("/comments", {
-      post: postId,
-      author_name: name,
-      author_email: email,
-      content,
-      parent,
-    })
+    const response = await makeRequestWithRetry(() =>
+      api.post("/comments", {
+        post: postId,
+        author_name: name,
+        author_email: email,
+        content,
+        parent,
+      }),
+    )
     return response.data
   } catch (error) {
     console.error("Error submitting comment:", error)
@@ -160,15 +251,21 @@ export async function submitComment(postId: number, name: string, email: string,
 }
 
 export async function searchPosts(searchTerm: string) {
+  const cacheKey = `search-${searchTerm}`
+
   try {
-    const response = await api.get("/posts", {
-      params: {
-        search: searchTerm,
-        _embed: "wp:featuredmedia,author",
-        per_page: 20,
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/posts", {
+          params: {
+            search: searchTerm,
+            _embed: "wp:featuredmedia,author",
+            per_page: 20,
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error(`Error searching posts for "${searchTerm}":`, error)
     return []
@@ -176,17 +273,22 @@ export async function searchPosts(searchTerm: string) {
 }
 
 export async function getBreakingNews() {
+  const cacheKey = "breaking-news"
+
   try {
-    // Assuming you have a custom field for breaking news
-    const response = await api.get("/posts", {
-      params: {
-        _embed: "wp:featuredmedia,author",
-        per_page: 5,
-        "filter[meta_key]": "is_breaking_news",
-        "filter[meta_value]": true,
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/posts", {
+          params: {
+            _embed: "wp:featuredmedia,author",
+            per_page: 5,
+            "filter[meta_key]": "is_breaking_news",
+            "filter[meta_value]": true,
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error("Error fetching breaking news:", error)
     return []
@@ -194,17 +296,22 @@ export async function getBreakingNews() {
 }
 
 export async function getPostsByDistrict(district: string) {
+  const cacheKey = `district-${district}`
+
   try {
-    // Assuming you have a custom field for district
-    const response = await api.get("/posts", {
-      params: {
-        _embed: "wp:featuredmedia,author",
-        per_page: 10,
-        "filter[meta_key]": "district",
-        "filter[meta_value]": district,
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/posts", {
+          params: {
+            _embed: "wp:featuredmedia,author",
+            per_page: 10,
+            "filter[meta_key]": "district",
+            "filter[meta_value]": district,
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error(`Error fetching posts for district ${district}:`, error)
     return []
@@ -212,44 +319,55 @@ export async function getPostsByDistrict(district: string) {
 }
 
 export async function getRelatedPosts(postId: number, categoryIds: number[]) {
+  const cacheKey = `related-${postId}-${categoryIds.join(",")}`
+
   try {
-    const response = await api.get("/posts", {
-      params: {
-        _embed: "wp:featuredmedia,author",
-        per_page: 4,
-        exclude: postId,
-        categories: categoryIds.join(","),
-      },
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() =>
+        api.get("/posts", {
+          params: {
+            _embed: "wp:featuredmedia,author",
+            per_page: 4,
+            exclude: postId,
+            categories: categoryIds.join(","),
+          },
+        }),
+      )
+      return response.data
     })
-    return response.data
   } catch (error) {
     console.error(`Error fetching related posts for post ${postId}:`, error)
     return []
   }
 }
 
-export async function getTrendingPosts() {
+export async function getTrendingPosts(): Promise<Post[]> {
   try {
-    // Assuming you have a way to track trending posts
-    // This could be based on view count, comments, or other metrics
-    const response = await api.get("/posts", {
-      params: {
-        _embed: "wp:featuredmedia,author",
-        per_page: 5,
-        orderby: "comment_count", // Using comment count as a proxy for trending
-      },
-    })
-    return response.data
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}/posts?_embed&per_page=5&orderby=date`,
+      { next: { revalidate: 3600 } }, // Cache for 1 hour
+    )
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch trending posts: ${response.status}`)
+    }
+
+    const posts = await response.json()
+    return Array.isArray(posts) ? posts : []
   } catch (error) {
     console.error("Error fetching trending posts:", error)
-    return []
+    return [] // Return empty array on error
   }
 }
 
 export async function getMediaById(mediaId: number) {
+  const cacheKey = `media-${mediaId}`
+
   try {
-    const response = await api.get(`/media/${mediaId}`)
-    return response.data
+    return await cachedRequest(cacheKey, async () => {
+      const response = await makeRequestWithRetry(() => api.get(`/media/${mediaId}`))
+      return response.data
+    })
   } catch (error) {
     console.error(`Error fetching media with ID ${mediaId}:`, error)
     return null
@@ -259,10 +377,12 @@ export async function getMediaById(mediaId: number) {
 export async function subscribeToNewsletter(email: string, name: string) {
   // This would typically connect to a newsletter service or custom endpoint
   try {
-    const response = await api.post("/newsletter/subscribe", {
-      email,
-      name,
-    })
+    const response = await makeRequestWithRetry(() =>
+      api.post("/newsletter/subscribe", {
+        email,
+        name,
+      }),
+    )
     return response.data
   } catch (error) {
     console.error("Error subscribing to newsletter:", error)
@@ -272,15 +392,16 @@ export async function subscribeToNewsletter(email: string, name: string) {
 
 export async function submitUserNews(formData: FormData) {
   try {
-    const response = await api.post("/user-news", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
+    const response = await makeRequestWithRetry(() =>
+      api.post("/user-news", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }),
+    )
     return response.data
   } catch (error) {
     console.error("Error submitting user news:", error)
     throw error
   }
 }
-

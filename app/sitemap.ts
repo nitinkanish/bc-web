@@ -79,4 +79,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Combine all routes
   return [...staticRoutes, ...postRoutes, ...categoryRoutes, ...districtRoutes]
 }
-

@@ -317,11 +317,15 @@ export default function DistrictInformation({ district }: DistrictInfoProps) {
                   <div>
                     <h4 className="text-sm font-medium">Universities</h4>
                     <ul className="list-disc list-inside">
-                      {district.education.universities.map((university, index) => (
-                        <li key={index} className="text-sm text-muted-foreground">
-                          {university}
-                        </li>
-                      ))}
+                      {district.education.universities.length > 0 ? (
+                        district.education.universities.map((university, index) => (
+                          <li key={index} className="text-sm text-muted-foreground">
+                            {university}
+                          </li>
+                        ))
+                      ) : (
+                        <li className="text-sm text-muted-foreground">No universities in this district</li>
+                      )}
                     </ul>
                   </div>
                   <div>
@@ -449,4 +453,3 @@ export default function DistrictInformation({ district }: DistrictInfoProps) {
     </div>
   )
 }
-

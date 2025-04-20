@@ -1,33 +1,33 @@
-"use client";
+"use client"
 
-import { useState, useEffect, Suspense } from "react";
-import Link from "next/link";
-import { useLanguage } from "@/components/language-provider";
-import NewsCard from "@/components/news-card";
-import { Trash2 } from "lucide-react";
-import type { Post } from "@/lib/api";
+import { useState, useEffect, Suspense } from "react"
+import Link from "next/link"
+import { useLanguage } from "@/components/language-provider"
+import NewsCard from "@/components/news-card"
+import { Trash2 } from "lucide-react"
+import type { Post } from "@/lib/api"
 
 export default function ReadLaterPage() {
-  const { t } = useLanguage();
-  const [savedArticles, setSavedArticles] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { t } = useLanguage()
+  const [savedArticles, setSavedArticles] = useState<Post[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const articles = JSON.parse(localStorage.getItem("readLaterArticles") || "[]");
-    setSavedArticles(articles);
-    setIsLoading(false);
-  }, []);
+    const articles = JSON.parse(localStorage.getItem("readLaterArticles") || "[]")
+    setSavedArticles(articles)
+    setIsLoading(false)
+  }, [])
 
   const clearAllArticles = () => {
-    localStorage.removeItem("readLaterArticles");
-    setSavedArticles([]);
-  };
+    localStorage.removeItem("readLaterArticles")
+    setSavedArticles([])
+  }
 
   const removeArticle = (id: number) => {
-    const updatedArticles = savedArticles.filter((article) => article.id !== id);
-    localStorage.setItem("readLaterArticles", JSON.stringify(updatedArticles));
-    setSavedArticles(updatedArticles);
-  };
+    const updatedArticles = savedArticles.filter((article) => article.id !== id)
+    localStorage.setItem("readLaterArticles", JSON.stringify(updatedArticles))
+    setSavedArticles(updatedArticles)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -78,6 +78,5 @@ export default function ReadLaterPage() {
         </div>
       )}
     </div>
-  );
+  )
 }
-

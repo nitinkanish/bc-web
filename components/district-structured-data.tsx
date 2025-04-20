@@ -33,4 +33,3 @@ export default function DistrictStructuredData({ district, url }: DistrictStruct
 
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 }
-

@@ -44,4 +44,3 @@ export function generateDistrictMetadata(slug: string): Metadata {
     },
   }
 }
-

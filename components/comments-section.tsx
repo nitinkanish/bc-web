@@ -8,6 +8,7 @@ import { getCommentsByPostId, submitComment } from "@/lib/api"
 import type { Comment } from "@/lib/api"
 import { formatDistanceToNow } from "date-fns"
 import { enUS, hi } from "date-fns/locale"
+import { MessageSquare, Send } from "lucide-react"
 
 interface CommentsProps {
   postId: number
@@ -28,9 +29,14 @@ export default function CommentsSection({ postId }: CommentsProps) {
   useEffect(() => {
     const fetchComments = async () => {
       setIsLoading(true)
-      const data = await getCommentsByPostId(postId)
-      setComments(data)
-      setIsLoading(false)
+      try {
+        const data = await getCommentsByPostId(postId)
+        setComments(data)
+      } catch (error) {
+        console.error("Error fetching comments:", error)
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     fetchComments()
@@ -70,13 +76,14 @@ export default function CommentsSection({ postId }: CommentsProps) {
   }
 
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-6">
+    <div className="mt-12 pt-8 border-t">
+      <h2 className="text-2xl font-bold mb-6 flex items-center">
+        <MessageSquare className="h-5 w-5 mr-2" />
         {t("comments")} ({comments.length})
       </h2>
 
       {/* Comment form */}
-      <div className="bg-muted p-4 rounded-lg mb-8">
+      <div className="bg-muted p-6 rounded-lg mb-8">
         <h3 className="font-medium mb-4">Leave a comment</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -123,9 +130,19 @@ export default function CommentsSection({ postId }: CommentsProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-primary text-primary-foreground font-medium py-2 px-4 rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+            className="bg-primary text-primary-foreground font-medium py-2 px-4 rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 flex items-center"
           >
-            {isSubmitting ? "..." : t("submit_comment")}
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Submitting...
+              </>
+            ) : (
+              <>
+                <Send className="h-4 w-4 mr-2" />
+                {t("submit_comment")}
+              </>
+            )}
           </button>
           {message && (
             <p className={`text-sm ${message.type === "success" ? "text-green-500" : "text-red-500"}`}>
@@ -143,7 +160,7 @@ export default function CommentsSection({ postId }: CommentsProps) {
       ) : comments.length > 0 ? (
         <div className="space-y-6">
           {comments.map((comment) => (
-            <div key={comment.id} className="border-b border-border pb-6">
+            <div key={comment.id} className="bg-muted/50 p-4 rounded-lg">
               <div className="flex justify-between items-start">
                 <div className="font-medium">{comment.author_name}</div>
                 <div className="text-sm text-muted-foreground">
@@ -153,14 +170,19 @@ export default function CommentsSection({ postId }: CommentsProps) {
                   })}
                 </div>
               </div>
-              <div className="mt-2" dangerouslySetInnerHTML={{ __html: comment.content.rendered }} />
+              <div
+                className="mt-2 text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: comment.content.rendered }}
+              />
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-center text-muted-foreground py-8">No comments yet. Be the first to comment!</p>
+        <div className="text-center text-muted-foreground py-8 bg-muted/50 rounded-lg">
+          <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+          <p>No comments yet. Be the first to comment!</p>
+        </div>
       )}
     </div>
   )
 }
-

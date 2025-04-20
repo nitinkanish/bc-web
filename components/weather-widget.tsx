@@ -1,129 +1,88 @@
-"use client"
+import { getWeatherData } from "@/lib/weather-api"
+import { Cloud, CloudRain, Sun, Wind, Droplets, Thermometer, Eye } from "lucide-react"
+import Link from "next/link"
 
-import { useState, useEffect } from "react"
-import { useLanguage } from "@/components/language-provider"
-import { Cloud, Sun, CloudRain, CloudSnow, CloudLightning, Wind } from "lucide-react"
+export const revalidate = 3600 // Revalidate every hour
 
-interface WeatherData {
-  location: string
-  temperature: number
-  condition: string
-  icon: string
-  humidity: number
-  windSpeed: number
-}
+export default async function WeatherWidget() {
+  const weatherData = await getWeatherData("Shimla")
 
-const DISTRICTS = [
-  "Shimla",
-  "Mandi",
-  "Kangra",
-  "Solan",
-  "Kullu",
-  "Hamirpur",
-  "Bilaspur",
-  "Una",
-  "Chamba",
-  "Sirmaur",
-  "Kinnaur",
-  "Lahaul and Spiti",
-]
+  if (!weatherData) {
+    return (
+      <div className="bg-muted p-4 rounded-lg text-center">
+        <p>Weather data unavailable</p>
+      </div>
+    )
+  }
 
-export default function WeatherWidget() {
-  const { t, language } = useLanguage()
-  const [weather, setWeather] = useState<WeatherData | null>(null)
-  const [selectedDistrict, setSelectedDistrict] = useState("Shimla")
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchWeather = async () => {
-      setIsLoading(true)
-      try {
-        // In a real app, you would fetch from a weather API
-        // For this example, we'll use mock data
-        const mockWeatherData: WeatherData = {
-          location: selectedDistrict,
-          temperature: Math.floor(Math.random() * 15) + 10, // 10-25°C
-          condition: ["Sunny", "Cloudy", "Rainy", "Snowy"][Math.floor(Math.random() * 4)],
-          icon: ["sun", "cloud", "cloud-rain", "cloud-snow"][Math.floor(Math.random() * 4)],
-          humidity: Math.floor(Math.random() * 30) + 50, // 50-80%
-          windSpeed: Math.floor(Math.random() * 20) + 5, // 5-25 km/h
-        }
-
-        setWeather(mockWeatherData)
-      } catch (error) {
-        console.error("Error fetching weather data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchWeather()
-  }, [selectedDistrict])
-
-  const getWeatherIcon = (icon: string) => {
-    switch (icon) {
-      case "sun":
-        return <Sun className="h-8 w-8 text-yellow-500" />
-      case "cloud":
-        return <Cloud className="h-8 w-8 text-gray-400" />
-      case "cloud-rain":
-        return <CloudRain className="h-8 w-8 text-blue-400" />
-      case "cloud-snow":
-        return <CloudSnow className="h-8 w-8 text-blue-200" />
-      case "cloud-lightning":
-        return <CloudLightning className="h-8 w-8 text-yellow-400" />
-      default:
-        return <Sun className="h-8 w-8 text-yellow-500" />
+  const getWeatherIcon = (condition: string) => {
+    const lowerCondition = condition.toLowerCase()
+    if (lowerCondition.includes("rain") || lowerCondition.includes("drizzle")) {
+      return <CloudRain className="h-10 w-10 text-blue-500" />
+    } else if (lowerCondition.includes("cloud")) {
+      return <Cloud className="h-10 w-10 text-gray-500" />
+    } else if (lowerCondition.includes("clear") || lowerCondition.includes("sun")) {
+      return <Sun className="h-10 w-10 text-yellow-500" />
+    } else {
+      return <Cloud className="h-10 w-10 text-gray-500" />
     }
   }
 
-  return (
-    <div className="bg-muted rounded-lg p-4 shadow-sm">
-      <h3 className="font-bold mb-3">{t("weather")}</h3>
+ 
 
-      <div className="mb-3">
-        <select
-          value={selectedDistrict}
-          onChange={(e) => setSelectedDistrict(e.target.value)}
-          className="w-full p-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-        >
-          {DISTRICTS.map((district) => (
-            <option key={district} value={district}>
-              {district}
-            </option>
-          ))}
-        </select>
+  return (
+    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-lg shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-bold text-lg">{weatherData.name} Weather</h3>
+        <span className="text-sm text-muted-foreground">Today</span>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-24">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-        </div>
-      ) : weather ? (
-        <div>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-2xl font-bold">{weather.temperature}°C</div>
-              <div className="text-sm text-muted-foreground">{weather.condition}</div>
-            </div>
-            {getWeatherIcon(weather.icon)}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          {getWeatherIcon(weatherData.weather[0].main)}
+          <div className="ml-3">
+            <div className="text-3xl font-bold">{Math.round(weatherData.main.temp)}°C</div>
+            <div className="text-sm text-muted-foreground capitalize">{weatherData.weather[0].description}</div>
           </div>
+        </div>
+      </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
-            <div>
-              <span className="text-muted-foreground">Humidity:</span> {weather.humidity}%
-            </div>
-            <div className="flex items-center">
-              <span className="text-muted-foreground mr-1">Wind:</span>
-              <Wind className="h-3 w-3 mr-1" />
-              {weather.windSpeed} km/h
-            </div>
+      <div className="grid grid-cols-2 gap-4 mt-6">
+        <div className="flex items-center">
+          <Thermometer className="h-4 w-4 mr-2 text-red-500" />
+          <div>
+            <div className="text-sm text-muted-foreground">Feels like</div>
+            <div className="font-medium">{Math.round(weatherData.main.feels_like)}°C</div>
           </div>
         </div>
-      ) : (
-        <div className="text-center text-muted-foreground">Weather data unavailable</div>
-      )}
+        <div className="flex items-center">
+          <Droplets className="h-4 w-4 mr-2 text-blue-500" />
+          <div>
+            <div className="text-sm text-muted-foreground">Humidity</div>
+            <div className="font-medium">{weatherData.main.humidity}%</div>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <Wind className="h-4 w-4 mr-2 text-gray-500" />
+          <div>
+            <div className="text-sm text-muted-foreground">Wind</div>
+            <div className="font-medium">{Math.round(weatherData.wind.speed)} m/s</div>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <Eye className="h-4 w-4 mr-2 text-gray-500" />
+          <div>
+            <div className="text-sm text-muted-foreground">Visibility</div>
+            <div className="font-medium">{(weatherData.visibility / 1000).toFixed(1)} km</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-border">
+        <Link href="/weather" className="text-sm text-primary hover:underline flex justify-center">
+          View detailed forecast
+        </Link>
+      </div>
     </div>
   )
 }
-

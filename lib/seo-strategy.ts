@@ -89,22 +89,44 @@ export const seoConfig = {
     mobileResponsive: true,
     pagespeedTarget: 90,
     secureWithHttps: true,
-    robotsTxtRules: [
-      "User-agent: *",
-      "Allow: /",
-      "Disallow: /admin/",
-      "Sitemap: https://www.bolchaal.in/sitemap.xml",
-    ],
+    robotsTxtRules: ["User-agent: *", "Allow: /", "Disallow: /admin/", "Sitemap: https://www.bolchaal.in/sitemap.xml"],
     xmlSitemapRequired: true,
     hreflangImplementation: { en: "en_IN", hi: "hi_IN" },
+  },
+
+  // Add the new pages to the SEO strategy
+  pages: {
+    home: {
+      title: "Himachal Pradesh News, Weather, Tourism & Local Updates",
+      description:
+        "Get the latest news, weather updates, tourism information, and local stories from across Himachal Pradesh.",
+    },
+    about: {
+      title: "About Bol Chaal News | Himachal Pradesh's Premier News Channel",
+      description:
+        "Learn about Bol Chaal News, founded in 2016, and our mission to deliver accurate and timely news from across Himachal Pradesh.",
+    },
+    contact: {
+      title: "Contact Bol Chaal News | Get in Touch With Our Team",
+      description:
+        "Reach out to the Bol Chaal News team for inquiries, feedback, news tips, or advertising opportunities.",
+    },
+    privacyPolicy: {
+      title: "Privacy Policy | Bol Chaal News",
+      description: "Read our privacy policy to understand how we collect, use, and protect your personal information.",
+    },
+    termsOfService: {
+      title: "Terms of Service | Bol Chaal News",
+      description: "Review our terms of service governing your use of the Bol Chaal News website and services.",
+    },
   },
 }
 
 // Helper functions for SEO
 export const seoHelpers = {
   truncateText: (text, maxLength) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + "...";
+    if (text.length <= maxLength) return text
+    return text.substring(0, maxLength).trim() + "..."
   },
 
   generateSlug: (text) => {
@@ -113,7 +135,7 @@ export const seoHelpers = {
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
-      .trim();
+      .trim()
   },
 
   formatDateForSEO: (date) => date.toISOString(),
@@ -167,4 +189,3 @@ export const seoHelpers = {
     }),
   }),
 }
-

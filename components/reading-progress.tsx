@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from "react"
 
-export default function ReadingProgress() {
-  const [completion, setCompletion] = useState(0)
+interface ReadingProgressProps {
+  color?: string
+}
+
+export default function ReadingProgress({ color = "#FF5722" }: ReadingProgressProps) {
+  const [width, setWidth] = useState(0)
 
   useEffect(() => {
     const updateScrollCompletion = () => {
       const currentProgress = window.scrollY
       const scrollHeight = document.body.scrollHeight - window.innerHeight
-
       if (scrollHeight) {
-        setCompletion(Number((currentProgress / scrollHeight).toFixed(2)) * 100)
+        setWidth(Number((currentProgress / scrollHeight).toFixed(2)) * 100)
       }
     }
 
@@ -23,9 +26,13 @@ export default function ReadingProgress() {
   }, [])
 
   return (
-    <div className="fixed top-0 left-0 w-full h-1 z-50">
-      <div className="h-full bg-primary transition-all duration-150 ease-out" style={{ width: `${completion}%` }} />
-    </div>
+    <div
+      className="fixed top-0 left-0 right-0 h-1 z-50 transition-all duration-100 ease-out"
+      style={{
+        width: `${width}%`,
+        backgroundColor: color,
+        boxShadow: `0 0 5px ${color}`,
+      }}
+    />
   )
 }
-

@@ -12,8 +12,6 @@ export async function GET(request: NextRequest) {
     const description = searchParams.get("description") || "Latest news from Himachal Pradesh"
     const type = searchParams.get("type") || "article"
 
-
-
     return new ImageResponse(
       <div
         style={{
@@ -129,7 +127,6 @@ export async function GET(request: NextRequest) {
           </div>
         </div>
       </div>,
-   
     )
   } catch (e) {
     console.error(e)
@@ -138,4 +135,3 @@ export async function GET(request: NextRequest) {
     })
   }
 }
-

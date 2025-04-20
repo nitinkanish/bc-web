@@ -1,0 +1,119 @@
+/* Mobile-specific optimizations */
+
+@media (max-width: 768px) {
+  /* Increase font size for better readability */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* Increase touch targets */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimize spacing */
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Improve readability of news content */
+  .news-content p {
+    margin-bottom: 1.2em;
+  }
+
+  .news-content img {
+    height: auto !important;
+    max-width: 100% !important;
+  }
+
+  /* Fix table display */
+  .news-content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Optimize form elements */
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+
+  /* Sticky header optimization */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Bottom navigation for mobile */
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--background);
+    border-top: 1px solid var(--border);
+    padding: 8px 0;
+    z-index: 50;
+  }
+
+  /* Add padding to bottom of page to account for bottom nav */
+  .has-bottom-nav {
+    padding-bottom: 60px;
+  }
+
+  /* Optimize share buttons */
+  .share-buttons-mobile {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+  }
+
+  /* Optimize text-to-speech player */
+  .tts-player-mobile {
+    position: sticky;
+    bottom: 60px;
+    z-index: 40;
+    margin: 0 -16px;
+    padding: 8px 16px;
+    background: var(--background);
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* High contrast mode for accessibility */
+@media (prefers-contrast: high) {
+  body {
+    color: #000;
+    background: #fff;
+  }
+
+  a {
+    color: #00f;
+    text-decoration: underline;
+  }
+
+  button,
+  .button {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

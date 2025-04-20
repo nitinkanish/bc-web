@@ -1,6 +1,6 @@
-"use client"; // Ensure the component runs only on the client
+"use client" // Ensure the component runs only on the client
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { format } from "date-fns"
@@ -21,15 +21,15 @@ export function truncateText(text: string, length: number) {
 }
 
 export function stripHtml(html: string) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState("")
 
   useEffect(() => {
-    const tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    setText(tmp.textContent || tmp.innerText || "");
-  }, [html]);
+    const tmp = document.createElement("DIV")
+    tmp.innerHTML = html
+    setText(tmp.textContent || tmp.innerText || "")
+  }, [html])
 
-  return text;
+  return text
 }
 export function getReadingTime(content: string) {
   const wordsPerMinute = 200
@@ -38,4 +38,3 @@ export function getReadingTime(content: string) {
   const minutes = Math.ceil(words / wordsPerMinute)
   return minutes
 }
-

@@ -1,15 +1,17 @@
 import type React from "react"
 import { Mona_Sans as FontSans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
-import { ThemeProvider } from "@/components/theme-provider"
-import { LanguageProvider } from "@/components/language-provider"
+import NextTopLoader from "nextjs-toploader"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import "./globals.css"
-import GoogleAnalytics from "@/components/google-analytics"
+import "./mobile.css"
+import "./news-progress.css"
 import { seoConfig } from "@/lib/seo-strategy"
 import type { Metadata } from "next"
-import { Suspense } from "react";
+import { Suspense } from "react"
+import ClientProviders from "@/components/client-providers"
+import TopLoader from "@/components/nextjs-toploader"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -102,28 +104,46 @@ export default function RootLayout({
             __html: JSON.stringify(seoConfig.structuredData.organization),
           }}
         />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YV4YLT40K4" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-YV4YLT40K4', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
       </head>
       <body className={`font-sans antialiased ${fontSans.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <LanguageProvider>
-            <div className="flex min-h-screen flex-col">
+        <TopLoader />
+        {/* Add NextTopLoader for route changes */}
+        <NextTopLoader
+          color="#2563eb"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #2563eb,0 0 5px #2563eb"
+        />
+
+        <ClientProviders>
+          <div className="flex min-h-screen flex-col">
+            <Suspense fallback={<div className="h-16 bg-background border-b"></div>}>
               <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </LanguageProvider>
-        </ThemeProvider>
+            </Suspense>
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </ClientProviders>
         <Analytics />
-        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
-          <Suspense fallback={null}>
-            <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
-          </Suspense>
-        )}
       </body>
     </html>
   )
 }
-
-
-
-import './globals.css'

@@ -1,0 +1,331 @@
+/* Article page specific styles */
+.article-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.article-title {
+  font-family: "Georgia", serif;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.article-image {
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.article-content {
+  font-family: "Georgia", serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.article-content p {
+  margin-bottom: 1.5rem;
+}
+
+.article-content h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.article-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-content blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+}
+
+.article-content ul,
+.article-content ol {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.article-content a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-content a:hover {
+  text-decoration: none;
+}
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.article-tag {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.article-tag:hover {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.related-posts-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border);
+  position: relative;
+}
+
+.related-posts-title::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background-color: var(--primary);
+}
+
+.related-posts-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .related-posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .related-posts-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.inline-related-posts {
+  background-color: var(--muted);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.inline-related-posts-title {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.inline-related-post-link {
+  color: var(--primary);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.inline-related-post-link:hover {
+  text-decoration: underline;
+}
+
+.ad-unit {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: var(--muted);
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.ad-unit-label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-bottom: 0.5rem;
+}
+
+.advertise-cta {
+  background-color: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+}
+
+.advertise-cta-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.advertise-cta-text {
+  margin-bottom: 1rem;
+}
+
+.advertise-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.advertise-cta-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.advertise-cta-button-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.advertise-cta-button-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.advertise-cta-button-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.advertise-cta-button-secondary:hover {
+  background-color: var(--secondary-dark);
+}
+
+/* Add this to your existing article-styles.css file */
+@keyframes tickerAnimation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.breaking-news-ticker {
+  display: inline-block;
+  animation: tickerAnimation 30s linear infinite;
+  padding-right: 100%;
+}
+
+/* Hindi news content styling */
+.hindi-news-content p {
+  line-height: 1.8;
+  margin-bottom: 1.5em;
+}
+
+.hindi-news-content h2 {
+  font-size: 1.5rem;
+  color: #f97316;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 700;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.hindi-news-content h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 4px;
+  background-color: #f97316;
+  border-radius: 2px;
+}
+
+.hindi-news-content blockquote {
+  background-color: rgba(249, 115, 22, 0.1);
+  border-left: 4px solid #f97316;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+}
+
+.hindi-news-content img {
+  border-radius: 0.5rem;
+  border: 2px solid rgba(249, 115, 22, 0.2);
+}
+
+.hindi-news-content a {
+  color: #ea580c;
+  text-decoration: underline;
+  text-decoration-color: rgba(249, 115, 22, 0.4);
+  text-underline-offset: 2px;
+}
+
+.hindi-news-content a:hover {
+  text-decoration-color: #ea580c;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .article-title {
+    font-size: 1.75rem;
+  }
+
+  .article-content {
+    font-size: 1rem;
+  }
+
+  .article-meta {
+    font-size: 0.75rem;
+  }
+
+  .advertise-cta {
+    padding: 1rem;
+  }
+
+  .advertise-cta-buttons {
+    flex-direction: column;
+  }
+
+  .advertise-cta-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .hindi-news-content h2 {
+    font-size: 1.25rem;
+  }
+
+  .hindi-news-content p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}

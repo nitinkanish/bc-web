@@ -66,4 +66,3 @@ export default function ReadLaterButton({ post }: ReadLaterButtonProps) {
     </button>
   )
 }
-

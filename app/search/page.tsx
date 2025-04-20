@@ -1,23 +1,23 @@
-import { Suspense } from "react";
-import { searchPosts } from "@/lib/api";
-import NewsCard from "@/components/news-card";
-import SearchBar from "@/components/search-bar";
+import { Suspense } from "react"
+import { searchPosts } from "@/lib/api"
+import NewsCard from "@/components/news-card"
+import SearchBar from "@/components/search-bar"
 
-export const revalidate = 0; // Don't cache search results
+export const revalidate = 0 // Don't cache search results
 
 interface SearchPageProps {
   searchParams: {
-    q?: string;
-  };
+    q?: string
+  }
 }
 
 export async function generateMetadata({ searchParams }: SearchPageProps) {
-  const query = searchParams.q || "";
+  const query = searchParams.q || ""
 
   return {
     title: query ? `Search results for "${query}"` : "Search",
     description: query ? `Search results for "${query}" on Himachal News` : "Search for news on Himachal News",
-  };
+  }
 }
 
 export default function SearchPage({ searchParams }: SearchPageProps) {
@@ -25,12 +25,12 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
     <Suspense fallback={<p>Loading search results...</p>}>
       <SearchPageContent searchParams={searchParams} />
     </Suspense>
-  );
+  )
 }
 
 async function SearchPageContent({ searchParams }: SearchPageProps) {
-  const query = searchParams.q || "";
-  const posts = query ? await searchPosts(query) : [];
+  const query = searchParams.q || ""
+  const posts = query ? await searchPosts(query) : []
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,6 +63,5 @@ async function SearchPageContent({ searchParams }: SearchPageProps) {
         </div>
       )}
     </div>
-  );
+  )
 }
-

@@ -6,57 +6,69 @@ import { getCategories, getPostsByCategory } from "@/lib/api"
 import NewsCard from "@/components/news-card"
 import { useEffect, useState } from "react"
 
-interface CategoryPageProps {
-  params: {
-    slug: string
-  }
-  searchParams: {
-    page?: string
-  }
+// Simplified props that only include what we need
+type CategoryPageClientProps = {
+  slug: string
+  page?: string
 }
 
-export const revalidate = 600 // Revalidate every 10 minutes
-
-export default function CategoryPageClient({ params, searchParams }: CategoryPageProps) {
-  const [category, setCategory] = useState(null)
-  const [posts, setPosts] = useState([])
-  const [currentPage, setCurrentPage] = useState(Number(searchParams.page) || 1)
+export default function CategoryPageClient({ slug, page }: CategoryPageClientProps) {
+  const [category, setCategory] = useState<any>(null)
+  const [posts, setPosts] = useState<any[]>([])
+  const [currentPage, setCurrentPage] = useState(page ? Number.parseInt(page, 10) : 1)
   const [hasMorePages, setHasMorePages] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchCategoryAndPosts = async () => {
       setLoading(true)
-      const categories = await getCategories()
-      const foundCategory = categories.find((cat: any) => cat.slug === params.slug)
+      try {
+        const categories = await getCategories()
+        const foundCategory = categories.find((cat: any) => cat.slug === slug)
 
-      if (!foundCategory) {
-        notFound()
-        return
+        if (!foundCategory) {
+          notFound()
+          return
+        }
+
+        setCategory(foundCategory)
+
+        const postsPerPage = 12
+
+        const fetchedPosts = await getPostsByCategory(foundCategory.id, {
+          per_page: postsPerPage,
+          page: currentPage,
+        })
+
+        setPosts(Array.isArray(fetchedPosts) ? fetchedPosts : [])
+
+        // WordPress API doesn't return total pages in a reliable way,
+        // so we'll check if we have a full page of results to determine if there might be more
+        setHasMorePages(Array.isArray(fetchedPosts) && fetchedPosts.length === postsPerPage)
+      } catch (error) {
+        console.error("Error fetching category data:", error)
+        setPosts([])
+      } finally {
+        setLoading(false)
       }
-
-      setCategory(foundCategory)
-
-      const postsPerPage = 12
-
-      const fetchedPosts = await getPostsByCategory(foundCategory.id, {
-        per_page: postsPerPage,
-        page: currentPage,
-      })
-
-      setPosts(fetchedPosts)
-
-      // WordPress API doesn't return total pages in a reliable way,
-      // so we'll check if we have a full page of results to determine if there might be more
-      setHasMorePages(fetchedPosts.length === postsPerPage)
-      setLoading(false)
     }
 
     fetchCategoryAndPosts()
-  }, [params.slug, searchParams.page, currentPage])
+  }, [slug, page, currentPage])
+
+  // Update currentPage when page prop changes
+  useEffect(() => {
+    if (page) {
+      setCurrentPage(Number.parseInt(page, 10))
+    }
+  }, [page])
 
   if (loading) {
     return <div className="container mx-auto px-4 py-8">Loading...</div>
+  }
+
+  if (!category) {
+    return <div className="container mx-auto px-4 py-8">Category not found</div>
   }
 
   return (
@@ -74,7 +86,7 @@ export default function CategoryPageClient({ params, searchParams }: CategoryPag
           {/* Pagination */}
           <div className="flex justify-between items-center mt-12">
             <Link
-              href={`/category/${params.slug}?page=${currentPage - 1}`}
+              href={`/category/${slug}?page=${currentPage - 1}`}
               className={`px-4 py-2 border rounded-md ${
                 currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"
               }`}
@@ -91,7 +103,7 @@ export default function CategoryPageClient({ params, searchParams }: CategoryPag
             <span className="text-muted-foreground">Page {currentPage}</span>
 
             <Link
-              href={`/category/${params.slug}?page=${currentPage + 1}`}
+              href={`/category/${slug}?page=${currentPage + 1}`}
               className={`px-4 py-2 border rounded-md ${
                 !hasMorePages ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"
               }`}
@@ -114,4 +126,3 @@ export default function CategoryPageClient({ params, searchParams }: CategoryPag
     </div>
   )
 }
-
