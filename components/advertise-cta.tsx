@@ -14,7 +14,7 @@ export default function AdvertiseCta({ variant = "inline", className = "" }: Adv
           Reach thousands of readers across Himachal Pradesh with your business advertisement.
         </p>
         <Link
-          href="/advertise"
+          href="https://wa.me/918988089080?text=to%20place%20add%20in%20bol%20chaal%20intrested"
           className="block w-full bg-primary text-white text-center py-2 rounded-md hover:bg-primary/90 transition-colors text-sm"
         >
           Get Started
@@ -34,7 +34,7 @@ export default function AdvertiseCta({ variant = "inline", className = "" }: Adv
             </p>
           </div>
           <Link
-            href="/advertise"
+            href="https://wa.me/918988089080?text=to%20place%20add%20in%20bol%20chaal%20intrested"
             className="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary/90 transition-colors text-center whitespace-nowrap"
           >
             View Ad Options
@@ -54,13 +54,13 @@ export default function AdvertiseCta({ variant = "inline", className = "" }: Adv
       </p>
       <div className="flex flex-wrap gap-2">
         <Link
-          href="/advertise"
+          href="https://wa.me/918988089080?text=to%20place%20add%20in%20bol%20chaal%20intrested"
           className="bg-primary text-white px-3 py-1.5 rounded-md hover:bg-primary/90 transition-colors text-sm"
         >
-          View Ad Rates
+          Check Ad Rates
         </Link>
         <Link
-          href="/contact"
+          href="https://wa.me/918988089080?text=to%20place%20add%20in%20bol%20chaal%20intrested"
           className="bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/90 transition-colors text-sm"
         >
           Contact Us

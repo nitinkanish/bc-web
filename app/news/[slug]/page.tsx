@@ -217,12 +217,12 @@ export default async function NewsPage({ params }: NewsPageProps) {
             {/* Article content */}
             <ArticleContent content={post.content.rendered} pullQuote={pullQuote} />
 
-            {/* Important notice box */}
+            {/* Important notice box 
             <NoticeBox
               title="महत्वपूर्ण सूचना"
               content="इस लेख में दी गई जानकारी सामान्य जानकारी के लिए है। कृपया किसी भी कार्रवाई से पहले विशेषज्ञ की सलाह लें।"
               translatedContent="The information provided in this article is for general information purposes only. Please consult with an expert before taking any action."
-            />
+            />*/}
 
             {/* Social Share */}
             <ArticleShare url={articleUrl} title={postTitle} description={postDescription} />
