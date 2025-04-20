@@ -33,21 +33,17 @@ export default function ArticleContent({ content, pullQuote }: ArticleContentPro
           }}
         />
 
-        {/* First ad unit */}
+        {/* First ad unit
         <div className="my-8 no-print">
           <AdUnit slot="1234567890" format="rectangle" layout="in-article" />
-        </div>
+        </div> */}
 
         {/* First ad-free slot */}
-        <AdFreeSlot title="प्रीमियम सामग्री / Premium Content">
-          <p className="font-medium">
-            हमारे प्रीमियम सदस्यों के लिए विशेष विश्लेषण और अतिरिक्त जानकारी। अधिक जानकारी के लिए हमारी सदस्यता योजनाओं पर जाएं।
-          </p>
-          <p className="text-sm italic">
-            Special analysis and additional information for our premium members. Visit our subscription plans for more
-            information.
-          </p>
+        <AdFreeSlot title="Click here to place your ad">
+          <div className="block text-center"><a href="https://wa.me/918988089080?text=I%20want%20to%20know%20about%20it" target="_blank"><img className="max-w-xs" src="https://backend.bolchaal.in/wp-content/uploads/2025/04/sidebar.jpg" /></a></div>
         </AdFreeSlot>
+        
+        
 
         {/* Middle part of content */}
         <div
@@ -66,17 +62,14 @@ export default function ArticleContent({ content, pullQuote }: ArticleContentPro
           </blockquote>
         )}
 
-        {/* Second ad unit */}
+        {/* Second ad unit 
         <div className="my-8 no-print">
           <AdUnit slot="0987654321" format="rectangle" layout="in-article" />
-        </div>
+        </div>*/}
 
         {/* Second ad-free slot */}
-        <AdFreeSlot title="विशेष रिपोर्ट / Special Report">
-          <p className="font-medium">इस मुद्दे पर हमारी विशेष रिपोर्ट। विज्ञापन मुक्त अनुभव के लिए प्रीमियम सदस्य बनें।</p>
-          <p className="text-sm italic">
-            Our special report on this issue. Become a premium member for an ad-free experience.
-          </p>
+         <AdFreeSlot title="Click here to place your ad">
+          <div className="block text-center"><a href="https://wa.me/918988089080?text=I%20want%20to%20know%20about%20it" target="_blank"><img className="max-w-xs" src="https://backend.bolchaal.in/wp-content/uploads/2025/04/sidebar.jpg" /></a></div>
         </AdFreeSlot>
 
         {/* Last part of content */}
