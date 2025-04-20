@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import { Home, Info, Phone, FileText, Bookmark } from "lucide-react"
 import { getCategories } from "@/lib/api"
@@ -8,8 +6,6 @@ import ThemeToggle from "@/components/theme-toggle"
 import LanguageToggle from "@/components/language-toggle"
 import MobileMenuToggle from "@/components/mobile-menu-toggle"
 import SearchToggle from "@/components/search-toggle"
-import { cn } from "@/lib/utils"
-import { usePathname } from "next/navigation"
 
 // Default categories as fallback
 const DEFAULT_MAIN_CATEGORIES = [
@@ -21,7 +17,6 @@ const DEFAULT_MAIN_CATEGORIES = [
 ]
 
 export default async function Header() {
-  const pathname = usePathname()
   // Fetch categories on the server with error handling
   let mainCategories: Category[] = []
   try {
@@ -73,7 +68,7 @@ export default async function Header() {
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center">
             <div className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
-             Bol Chaal
+              Bol Chaal
             </div>
           </Link>
 
@@ -92,6 +87,9 @@ export default async function Header() {
                 {category.name}
               </Link>
             ))}
+            <Link href="/ipl-2025" className="font-medium text-blue-600 hover:text-blue-800 transition-colors">
+              IPL 2025
+            </Link>
             <Link href="/districts" className="font-medium hover:text-primary transition-colors">
               Districts
             </Link>
