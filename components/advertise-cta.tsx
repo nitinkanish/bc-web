@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useRef } from "react"
 import Link from "next/link"
 
 interface AdvertiseCtaProps {
@@ -6,6 +9,32 @@ interface AdvertiseCtaProps {
 }
 
 export default function AdvertiseCta({ variant = "inline", className = "" }: AdvertiseCtaProps) {
+  const adRef = useRef(null)
+
+  useEffect(() => {
+    // Load script only once
+    const existingScript = document.querySelector('script[src*="adsbygoogle.js"]')
+    if (!existingScript) {
+      const script = document.createElement("script")
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4951872187136427"
+      script.async = true
+      script.crossOrigin = "anonymous"
+      document.head.appendChild(script)
+    }
+
+    // Try rendering the ad
+    const timeout = setTimeout(() => {
+      try {
+        // @ts-ignore
+        (window.adsbygoogle = window.adsbygoogle || []).push({})
+      } catch (e) {
+        console.error("AdSense error:", e)
+      }
+    }, 500)
+
+    return () => clearTimeout(timeout)
+  }, [])
+
   if (variant === "sidebar") {
     return (
       <div className={`p-4 bg-primary/5 border border-primary/20 rounded-lg ${className}`}>
@@ -44,7 +73,7 @@ export default function AdvertiseCta({ variant = "inline", className = "" }: Adv
     )
   }
 
-  // Default inline variant
+  // Default "inline" with ad code
   return (
     <div className={`p-5 bg-primary/10 rounded-lg border border-primary/20 ${className}`}>
       <h3 className="text-lg font-bold mb-2">Advertise with Bol Chaal News</h3>
@@ -52,7 +81,19 @@ export default function AdvertiseCta({ variant = "inline", className = "" }: Adv
         Reach our growing audience of readers across Himachal Pradesh. Promote your business, event, or service with our
         affordable advertising options.
       </p>
-      <div className="flex flex-wrap gap-2">
+
+      {/* Google AdSense Ad */}
+      <ins
+        className="adsbygoogle"
+        style={{ display: "block" }}
+        data-ad-client="ca-pub-4951872187136427"
+        data-ad-slot="7164714772"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+        ref={adRef}
+      />
+
+      <div className="flex flex-wrap gap-2 mt-4">
         <Link
           href="https://wa.me/918988089080?text=to%20place%20add%20in%20bol%20chaal%20intrested"
           className="bg-primary text-white px-3 py-1.5 rounded-md hover:bg-primary/90 transition-colors text-sm"
